@@ -29,17 +29,50 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FRotator GrabberRotation = GetComponentRotation();
-	FString SGrabberRotation = GrabberRotation.ToCompactString();
 
 
 
-	float  TimeSec = GetWorld()->TimeSeconds;
+
+
 	
-	UE_LOG(LogTemp, Display, TEXT("The Grabber Rotation:%s"), *SGrabberRotation);
-	UE_LOG(LogTemp, Display, TEXT("Current Time is :%f"), TimeSec);
-
-
 
 }
 
+void UGrabber::Release() {
+
+	UE_LOG(LogTemp, Display, TEXT("Released Grabber"));
+}
+
+void UGrabber::Grab() {
+
+	FVector Start = GetComponentLocation();
+
+	FVector End = Start + GetForwardVector() * MaxGrabDistance;
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
+
+	FHitResult HitResult;
+
+	bool HasHit = GetWorld()->SweepSingleByChannel(HitResult,
+		Start, End, FQuat::Identity,
+		ECC_GameTraceChannel2, Sphere);
+
+
+
+
+	if (HasHit) {
+
+		AActor* HitActor = HitResult.GetActor();
+
+
+		UE_LOG(LogTemp, Display, TEXT("Trace Hit: %s"), *HitActor->GetActorNameOrLabel());
+
+
+	}
+	else {
+		UE_LOG(LogTemp, Display, TEXT("Not Actor Hit"));
+	}
+
+	
+}
