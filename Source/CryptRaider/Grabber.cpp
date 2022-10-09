@@ -22,18 +22,6 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	
-	if (PhysicsHandle != nullptr) {
-		
-		UE_LOG(LogTemp, Display, TEXT("Physics Handle Component Initialized: %s"), *PhysicsHandle->GetName());
-
-
-
-	}
-	else {
-		UE_LOG(LogTemp, Warning , TEXT("Physics Handle Null") );
-	}
 	
 }
 
@@ -43,14 +31,21 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle();
+
+	if (PhysicsHandle == nullptr) {
+		return;
+	}
 
 
+	FVector TargetLocation = GetComponentLocation() + GetForwardVector() + HoldDistance;
+	PhysicsHandle->SetTargetLocationAndRotation(TargetLocation,GetComponentRotation());
 
-
-
-	
 
 }
+
+
+
 
 void UGrabber::Release() {
 
@@ -59,11 +54,22 @@ void UGrabber::Release() {
 
 void UGrabber::Grab() {
 
+
+	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	if (PhysicsHandle == nullptr) {
+		return;
+	}
+
 	FVector Start = GetComponentLocation();
 
 	FVector End = Start + GetForwardVector() * MaxGrabDistance;
 
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+
+	DrawDebugSphere(GetWorld(),End,10,10,FColor::Blue,false,5);
+
+
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
 
 	FHitResult HitResult;
@@ -77,16 +83,26 @@ void UGrabber::Grab() {
 
 	if (HasHit) {
 
-		AActor* HitActor = HitResult.GetActor();
-
-
-		UE_LOG(LogTemp, Display, TEXT("Trace Hit: %s"), *HitActor->GetActorNameOrLabel());
+		//Grabbing The Component
+		PhysicsHandle->GrabComponentAtLocationWithRotation(HitResult.GetComponent(),
+			NAME_None,HitResult.ImpactPoint,
+			GetComponentRotation()
+		);
 
 
 	}
-	else {
-		UE_LOG(LogTemp, Display, TEXT("Not Actor Hit"));
+
+
+	
+}
+
+UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const {
+
+	UPhysicsHandleComponent* Result =  GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (Result == nullptr) {
+		UE_LOG(LogTemp, Display, TEXT("Physics Handle Component Not Set to An Instance Of An Object"));
 	}
 
+	return Result;
 	
 }
