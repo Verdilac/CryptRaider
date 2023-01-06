@@ -35,13 +35,13 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-		float MaxGrabDistance = 400;
+		float MaxGrabDistance = 300;
 
 	UPROPERTY(EditAnywhere)
-		float GrabRadius = 100;
+		float GrabRadius = 50;
 
 	UPROPERTY(EditAnywhere)
-		float HoldDistance = 200;
+		float HoldDistance = 50;
 
 	UPhysicsHandleComponent* GetPhysicsHandle() const; 
 
