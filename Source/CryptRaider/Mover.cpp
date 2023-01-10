@@ -55,3 +55,7 @@ void UMover::MoveScretDoor(float DeltaTime) {
 
 };
 
+
+void UMover::SetShouldMove(bool NewShouldMove) {
+	ShouldMove = NewShouldMove;
+}
