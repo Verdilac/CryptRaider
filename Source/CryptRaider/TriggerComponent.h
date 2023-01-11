@@ -21,7 +21,6 @@ public:
 	//Constructor
 	UTriggerComponent();
 
-public:
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
@@ -42,9 +41,6 @@ private:
 
 	UMover* Mover;
 
-
-
-private:
 	AActor* GetAcceptableActor() const;
 	
 	

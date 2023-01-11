@@ -34,7 +34,7 @@ private:
 		float MoveTime = 4;
 
 
-
+	
 	bool ShouldMove = false;
 
 	FVector OriginalLocation;

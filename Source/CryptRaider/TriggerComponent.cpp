@@ -13,12 +13,6 @@ UTriggerComponent::UTriggerComponent() {
 }
 
 
-
-
-
-
-
-
 // Called when the game starts
 void UTriggerComponent::BeginPlay()
 {
@@ -31,12 +25,24 @@ void UTriggerComponent::BeginPlay()
 void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (Mover == nullptr) return;
 
 	AActor* AcceptableActor = GetAcceptableActor();
 
 	
 	FString AcceptableActorName;
 	if (AcceptableActor != nullptr) {
+		
+
+		//In compile time this checks if the actor we got hold of is a UPrimitiveComponent and returns it,other wise return nullptr
+		UPrimitiveComponent* Component = Cast<UPrimitiveComponent>(AcceptableActor->GetRootComponent());
+		if (Component != nullptr) {
+
+			Component->SetSimulatePhysics(false);
+			AcceptableActor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform,
+				NAME_None);
+			
+		}
 		
 		Mover->SetShouldMove(true);
 	}
@@ -63,9 +69,9 @@ AActor* UTriggerComponent::GetAcceptableActor() const {
 
 		FString ActorName = Actor->GetActorNameOrLabel();
 
-		if (Actor->ActorHasTag(UnlockDungeonDoorTag)) {
+		if (Actor->ActorHasTag(UnlockDungeonDoorTag) && !Actor->ActorHasTag("Grabbed")) {
 
-			UE_LOG(LogTemp, Display, TEXT("The door Has been Unlocked"));
+			
 			return Actor;
 		}
 
